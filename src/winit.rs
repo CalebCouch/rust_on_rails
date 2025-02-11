@@ -39,7 +39,7 @@ pub trait WinitAppTrait {
     const LOG_LEVEL: log::Level = log::Level::Info;
 
     fn new(window: WinitWindow) -> impl std::future::Future<Output = Self> where Self: Sized;
-    fn prepare(&mut self, width: u32, height: u32, scale_factor: f64, logical_width: f32, logical_height: f32) -> impl std::future::Future<Output = ()>;
+    fn prepare(&mut self, width: u32, height: u32, scale_factor: f64) -> impl std::future::Future<Output = ()>;
     fn render(&mut self) -> impl std::future::Future<Output = ()>;
 }
 
@@ -169,9 +169,6 @@ impl<A: WinitAppTrait + 'static> ApplicationHandler for WinitApp<A> {
                     let width = self.width;
                     let height = self.height;
                     let scale_factor = self.scale_factor;
-                    let logical_width = (width as f64 * scale_factor) as f32;
-                    let logical_height = (height as f64 * scale_factor) as f32;
-
 
                     #[cfg(target_arch="wasm32")]
                     {
@@ -179,7 +176,7 @@ impl<A: WinitAppTrait + 'static> ApplicationHandler for WinitApp<A> {
                         wasm_bindgen_futures::spawn_local(async move {
                             let mut app = app.lock().unwrap();
                             app.as_mut().unwrap().prepare(
-                                width, height, scale_factor, logical_width, logical_height
+                                width, height, scale_factor
                             ).await;
 
                             app.as_mut().unwrap().render().await;
@@ -191,7 +188,7 @@ impl<A: WinitAppTrait + 'static> ApplicationHandler for WinitApp<A> {
                     {
                         self.runtime.block_on(
                             self.app.lock().unwrap().as_mut().unwrap().prepare(
-                                width, height, scale_factor, logical_width, logical_height
+                                width, height, scale_factor
                             )
                         );
                         self.runtime.block_on(

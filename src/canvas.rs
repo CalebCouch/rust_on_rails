@@ -135,8 +135,13 @@ impl<A: CanvasAppTrait> WinitAppTrait for CanvasApp<A> {
 
     }
 
-    async fn prepare(&mut self, width: u32, height: u32, scale_factor: f64, logical_width: f32, logical_height: f32) {
-        self.resize(width, height);
+    async fn prepare(&mut self, width: u32, height: u32, scale_factor: f64) {
+        let (width, height) = self.resize(width, height);
+        let logical_width = (width as f64 / scale_factor) as f32;
+        let logical_height = (height as f64 / scale_factor) as f32;
+
+        println!("w: {}, h: {}, sf: {}, lw: {}, lh: {}", width, height, scale_factor, logical_width, logical_height);
+
         let meshes = self.app.draw(&mut self.canvas_atlas, logical_width as u32, logical_height as u32).await;
         self.canvas_renderer.prepare(
             &self.device,
@@ -193,7 +198,7 @@ impl<A: CanvasAppTrait> WinitAppTrait for CanvasApp<A> {
 }
 
 impl<A: CanvasAppTrait> CanvasApp<A> {
-    fn resize(&mut self, width: u32, height: u32) {
+    fn resize(&mut self, width: u32, height: u32) -> (u32, u32) {
         if
             (width > 0 && height > 0) &&
             (self.config.width != width || self.config.height != height)
@@ -207,6 +212,7 @@ impl<A: CanvasAppTrait> CanvasApp<A> {
             }
             self.depth_view = Self::create_depth_view(&self.device, &self.config);
         }
+        (self.config.width, self.config.height)
     }
 
     fn create_msaa_view(device: &Device, config: &SurfaceConfiguration) -> TextureView {

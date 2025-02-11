@@ -6,6 +6,18 @@ mod canvas;
 pub use canvas::{CanvasAppTrait, CanvasApp, CanvasAtlas};
 pub use canvas::{ItemType, Shape, CanvasItem, Text, image};
 
+
+#[cfg(target_os = "android")]
+pub use winit::AndroidApp;
+
+#[cfg(target_arch = "wasm32")]
+pub use wasm_bindgen::prelude::*;
+
+#[cfg(target_arch = "wasm32")]
+pub use wasm_bindgen;
+
+
+
 //  mod components;
 //  pub use components::{ComponentAppTrait, ComponentApp};
 //  pub use components::{ComponentContext, *};
@@ -13,12 +25,6 @@ pub use canvas::{ItemType, Shape, CanvasItem, Text, image};
 //  pub mod prelude {
 //      #[cfg(target_os = "android")]
 //      pub use winit::AndroidApp;
-
-//      #[cfg(target_arch = "wasm32")]
-//      pub use wasm_bindgen::prelude::*;
-
-//      #[cfg(target_arch = "wasm32")]
-//      pub use wasm_bindgen;
 
 //      pub use crate::{WinitApp, WinitAppTrait, CanvasApp, CanvasAppTrait};//, CanvasContext, ComponentApp};
 //      pub use crate::{

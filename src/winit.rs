@@ -14,25 +14,6 @@ use winit::platform::web::{WindowExtWebSys, EventLoopExtWebSys};
 
 use std::sync::{Mutex, Arc};
 
-//  #[derive(Clone, Copy)]
-//  pub struct ScreenSize {
-//      pub physical_width: u32,
-//      pub physical_height: u32,
-//      pub scale_factor: f64,
-//      pub logical_width: f32,
-//      pub logical_height: f32
-//  }
-
-//  impl ScreenSize {
-//      pub fn new(physical_width: u32, physical_height: u32, scale_factor: f64) -> Self {
-//          ScreenSize{
-//              physical_width, physical_height, scale_factor,
-//              logical_width: (physical_width as f64 * scale_factor) as f32,
-//              logical_height: (physical_height as f64 * scale_factor) as f32,
-//          }
-//      }
-//  }
-
 pub type WinitWindow = Arc<Window>;
 
 pub trait WinitAppTrait {
@@ -152,6 +133,9 @@ impl<A: WinitAppTrait + 'static> ApplicationHandler for WinitApp<A> {
     fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {
         if id == self.window().id() {
             match event {
+                WindowEvent::Touch(_) => {
+                    self.window().set_ime_allowed(true);
+                },
                 WindowEvent::CloseRequested |
                 WindowEvent::KeyboardInput {
                     event:
